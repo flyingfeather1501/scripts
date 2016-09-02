@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Untitled Random Wallpaper Slideshow Script. Name is subject to change.
-## Edit 2016/06/17 00:23 UTC+8
+## Edit 2016/09/03 02:47 UTC+8
 
 #### Variables ####
 # Initialize variables with default values
@@ -91,7 +91,13 @@ Options:
   esac
 done
 
-rwp_files=($rwp_dir/*)
+# check is $rwp_dir exist
+if ls $rwp_dir; then
+  rwp_files=($rwp_dir/*)
+else
+  echo "$rwp_dir does not exist"
+  exit 1
+fi
 
 # Report result
 echo "rwp_sleep_time_def is $rwp_sleep_time_def"
@@ -157,6 +163,14 @@ rwp_detect () {
   $GDMSESSION == "budgie-desktop" ]]; then
     rwp_handler=gnome
     rwp_handler_display=Budgie
+
+# Pantheon
+  elif [[
+  $XDG_SESSION_DESKTOP == "pantheon" ||
+  $DESKTOP_SESSION == "pantheon" ||
+  $GDMSESSION == "pantheon" ]]; then
+    rwp_handler=gnome
+    rwp_handler_display=Pantheon
 
 # GNOME & Cinnamon
   elif [[
