@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Untitled Random Wallpaper Slideshow Script. Name is subject to change.
-## Edit 2016/09/03 02:47 UTC+8
+## Edit 2016/09/03 23:16 UTC+8
 
 #### Variables ####
 # Initialize variables with default values
@@ -92,7 +92,7 @@ Options:
 done
 
 # check is $rwp_dir exist
-if ls $rwp_dir; then
+if ls $rwp_dir > /dev/null; then
   rwp_files=($rwp_dir/*)
 else
   echo "$rwp_dir does not exist"
