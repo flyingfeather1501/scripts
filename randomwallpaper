@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Untitled Random Wallpaper Slideshow Script. Name is subject to change.
-## Edit 2016/09/03 23:16 UTC+8
+## Edit 2016/09/05 03:18 UTC+8
 
 #### Variables ####
 # Initialize variables with default values
@@ -27,6 +27,7 @@ if [[ -f $HOME/.rwp.cfg ]]; then
 else
   touch $HOME/.rwp.cfg
   rwp_cfg_file_set=1
+  rwp_cfg=$HOME/.rwp.cfg
 fi
 
 # Handle Options
