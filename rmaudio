@@ -1,2 +1,2 @@
 #!/bin/bash
-ffmpeg -i $1 -an -c:v copy $(echo ${1%.*})_noaudio.mp4
+ffmpeg -i $1 -an -c:v copy "$(echo ${1%.*})_noaudio.mp4"
