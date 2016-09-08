@@ -1,6 +1,5 @@
 #!/bin/bash
 ## Untitled Random Wallpaper Slideshow Script. Name is subject to change.
-## Edit 2016/09/05 20:30 UTC+8
 
 #### Variables ####
 # Initialize variables with default values
@@ -10,9 +9,10 @@ rwp_cfg_file_set=0
 rwp_handler=auto
 rwp_cfg_used=0
 rwp_cfg=none
+rwp_custom_command="echo Use -C to specify custom command; exit 1"
 
 
-rwp_handlers_list="Available wallpaper handlers: mate, gnome, xfce, lxde, pcmanfm, cinnamon, feh, deepin"
+rwp_handlers_list="Available wallpaper handlers: mate, gnome, xfce, lxde, pcmanfm, cinnamon, feh, deepin, custom"
 
 # Get XDG_PICTURES_DIR from .config/user-dirs.dirs. Ex:"$HOME/Pictures"
 export $(cat $HOME/.config/user-dirs.dirs | grep PICTURES)
@@ -32,7 +32,7 @@ else
 fi
 
 # Handle Options
-while getopts "h?t:d:c:w:l" rwp_opt; do
+while getopts "h?t:d:c:w:lC:" rwp_opt; do
   case "$rwp_opt" in
   h|\?)
       echo "
@@ -43,6 +43,7 @@ Options:
  -d <DIR>                 Set wallpaper directory (default:$HOME/$XDG_PICTURES_DIR/Wallpapers)
  -c <config file>         Use config file to set wait time for individual images
  -w <wallpaper handler>   Set wallpaper handler manually (default:auto)
+ -C <custom command>      Define your own command to loop, ignores -w.
  -l                       List all wallpaper handlers
  -h or -?                 Show help (this message)
 "
@@ -93,6 +94,10 @@ Options:
   l)
     echo $rwp_handlers_list
     exit 0
+    ;;
+  C)
+    rwp_custom_command=$OPTARG
+    rwp_handler=custom
   esac
 done
 
@@ -258,6 +263,10 @@ rwp_set_xfce () {
 
 rwp_set_deepin () {
   gsettings set com.deepin.wrap.gnome.desktop.background picture-uri "$1"
+}
+
+rwp_set_custom () {
+  $rwp_custom_command
 }
 
 rwp_exit () {
