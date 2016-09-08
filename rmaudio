@@ -2,8 +2,8 @@
 OPTIND=1
 rma_remove_files=0
 
-while getopts "h?d" rwp_opt; do
-  case "$rwp_opt" in
+while getopts "h?d" rma_opt; do
+  case "$rma_opt" in
   h|\?)
       echo "
 Usage: rmaudio [OPTIONS]
