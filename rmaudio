@@ -1,2 +1,26 @@
 #!/bin/bash
+OPTIND=1
+rma_remove_files=0
+
+while getopts "h?d" rwp_opt; do
+  case "$rwp_opt" in
+  h|\?)
+      echo "
+Usage: rmaudio [OPTIONS]
+
+Options:
+ -d                       Remove input file after conversion
+ -h or -?                 Show help (this message)
+"
+      exit 0
+    ;;
+  d)
+    rma_remove_files=1
+    ;;
+  esac
+done
+
 ffmpeg -i $1 -an -c:v copy "$(echo ${1%.*})_noaudio.mp4"
+if [[ $rma_remove_files == 1 ]]; then
+  rm $1
+fi
