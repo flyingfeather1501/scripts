@@ -12,7 +12,7 @@ rwp_cfg_used=0
 rwp_cfg=none
 
 
-rwp_handlers_list="Available wallpaper handlers: mate, gnome, xfce, lxde, pcmanfm, cinnamon, feh"
+rwp_handlers_list="Available wallpaper handlers: mate, gnome, xfce, lxde, pcmanfm, cinnamon, feh, deepin"
 
 # Get XDG_PICTURES_DIR from .config/user-dirs.dirs. Ex:"$HOME/Pictures"
 export $(cat $HOME/.config/user-dirs.dirs | grep PICTURES)
@@ -81,6 +81,9 @@ Options:
         ;;
     feh)
         rwp_handler=feh
+        ;;
+    deepin|Deepin)
+        rwp_handler=deepin
         ;;
     *)
         echo $rwp_handlers_list
@@ -206,6 +209,12 @@ rwp_detect () {
     rwp_handler=lxde
     rwp_handler_display=LXDE
 
+# Deepin
+  elif [[
+  $XDG_CURRENT_DESKTOP == "Deepin" ||
+  $GDMSESSION == "deepin" ]]; then
+    rwp_handler=deepin
+
 # KDE
   elif [[ $GDMSESSION == "plasma_desktop" ]]; then
     rwp_exit "KDE Plasma"
@@ -245,6 +254,10 @@ rwp_set_xfce () {
   for ((i=rwp_set_xfce_wspc; i>=0; i--)); do
     xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/workspace$i/last-image -s "$1"
   done
+}
+
+rwp_set_deepin () {
+  gsettings set com.deepin.wrap.gnome.desktop.background picture-uri "$1"
 }
 
 rwp_exit () {
