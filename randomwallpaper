@@ -224,10 +224,6 @@ rwp_detect () {
   elif [[ $GDMSESSION == "plasma_desktop" ]]; then
     rwp_exit "KDE Plasma"
 
-# feh ??
-# elif killall -q -0 feh; then
-#  rwp_handler=feh
-
 # Other
   else
     rwp_exit "Desktop in use"
