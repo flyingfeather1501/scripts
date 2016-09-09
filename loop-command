@@ -1,0 +1,54 @@
+#!/bin/bash
+
+loop_init_var () {
+  OPTIND=1
+  loop_sleep_time=5m
+  loop_command=""
+}
+
+loop_print_help () {
+  echo "
+Usage: loop-command <sleep time> <command> [command args...]
+
+Options:
+-h or -?                 Show help (this message)
+"
+}
+
+loop_getopts () {
+  while getopts "h?" loop_opt; do
+    case "$loop_opt" in
+    h|\?)
+      loop_print_help
+      exit 0
+      ;;
+    t)
+      loop_sleep_time=$OPTARG
+    esac
+  done
+}
+
+loop_stop () {
+  echo "
+Terminating"
+  exit 0
+}
+
+# if $1 is absent
+if [[ -z ${1+x} ]]; then
+  loop_print_help
+  exit 1
+fi
+
+# run loop_stop when receiving INT i.e. Ctrl-C
+trap loop_stop INT
+
+loop_init_var
+loop_getopts "$@"
+
+while true; do
+  loop_sleep_time=$1
+  loop_command=$2
+  $loop_command "${@:3}"
+  sleep $loop_sleep_time
+done
