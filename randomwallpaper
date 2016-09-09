@@ -1,123 +1,117 @@
 #!/bin/bash
 ## Untitled Random Wallpaper Slideshow Script. Name is subject to change.
 
-#### Variables ####
-# Initialize variables with default values
-OPTIND=1
-rwp_sleep_time_def=1m
-rwp_cfg_file_set=0
-rwp_handler=auto
-rwp_cfg_used=0
-rwp_cfg=none
-rwp_custom_command="echo Use -C to specify custom command; exit 1"
-
-
-rwp_handlers_list="Available wallpaper handlers: mate, gnome, xfce, lxde, pcmanfm, cinnamon, feh, deepin, custom"
-
-# Get XDG_PICTURES_DIR from .config/user-dirs.dirs. Ex:"$HOME/Pictures"
-export $(cat $HOME/.config/user-dirs.dirs | grep PICTURES)
-# Cut from " to /.  Ex:"$HOME/Picures" -> Pictures"
-XDG_PICTURES_DIR=$(echo ${XDG_PICTURES_DIR#\"*/})
-# Cut off the last ". Ex: Pictures" -> Pictures
-XDG_PICTURES_DIR=$(echo ${XDG_PICTURES_DIR%\"})
-# Ex. Pictures -> /home/user/Pictures/Wallpapers
-rwp_dir=$HOME/$XDG_PICTURES_DIR/Wallpapers
-
-# Use .rwp.cfg if it exists
-if [[ -f $HOME/.rwp.cfg ]]; then
-  rwp_cfg_file_set=1
-  rwp_cfg=$HOME/.rwp.cfg
-else
-  rwp_cfg_file_set=0
-fi
-
-# Handle Options
-while getopts "h?t:d:c:w:lC:" rwp_opt; do
-  case "$rwp_opt" in
-  h|\?)
-      echo "
-Usage: randomwallpaper [OPTIONS]
-
-Options:
- -t <time>                Set global wait time (default:1m)
- -d <DIR>                 Set wallpaper directory (default:$HOME/$XDG_PICTURES_DIR/Wallpapers)
- -c <config file>         Use config file to set wait time for individual images
- -w <wallpaper handler>   Set wallpaper handler manually (default:auto)
- -C <custom command>      Define your own command to loop, ignores -w.
- -l                       List all wallpaper handlers
- -h or -?                 Show help (this message)
-"
-      exit 0
-    ;;
-  t)
-    rwp_sleep_time_def=$OPTARG
-    ;;
-  d)
-    rwp_dir=$OPTARG
-    ;;
-  c)
-    rwp_cfg=$OPTARG
-    rwp_cfg_file_set=1
-    ;;
-  w)
-    case $OPTARG in
-    MATE|mate)
-        rwp_handler=mate
-        ;;
-    GNOME|gnome)
-        rwp_handler=gnome
-        ;;
-    XFCE|xfce)
-        rwp_handler=xfce
-        ;;
-    LXDE|lxde)
-        rwp_handler=pcmanfm
-        rwp_handler_display=LXDE
-        ;;
-    pcmanfm)
-        rwp_handler=pcmanfm
-        ;;
-    Cinnamon|cinnamon)
-        rwp_handler=cinnamon
-        ;;
-    feh)
-        rwp_handler=feh
-        ;;
-    deepin|Deepin)
-        rwp_handler=deepin
-        ;;
-    *)
-        echo $rwp_handlers_list
-        exit 1
-    esac
-    ;;
-  l)
-    echo $rwp_handlers_list
-    exit 0
-    ;;
-  C)
-    rwp_custom_command=$OPTARG
-    rwp_handler=custom
-  esac
-done
-
-# check is $rwp_dir exist
-if ls $rwp_dir > /dev/null; then
-  rwp_files=($rwp_dir/*)
-else
-  echo "$rwp_dir does not exist"
-  exit 1
-fi
-
-# Report result
-echo "rwp_sleep_time_def is $rwp_sleep_time_def"
-echo "rwp_dir is $rwp_dir"
-echo "rwp_cfg is $rwp_cfg"
-
-#~~~ Variables ~~~#
-
 
 #### Functions ####
+
+rwp_init_vars () {
+  # Initialize variables with default values
+  OPTIND=1
+  rwp_sleep_time_def=1m
+  rwp_cfg_file_set=0
+  rwp_handler=auto
+  rwp_cfg_used=0
+  rwp_cfg=none
+  rwp_custom_command="echo Use -C to specify custom command; exit 1"
+  rwp_handlers_list="Available wallpaper handlers: mate, gnome, xfce, lxde, pcmanfm, cinnamon, feh, deepin, custom"
+
+  # Get XDG_PICTURES_DIR from .config/user-dirs.dirs. Ex:"$HOME/Pictures"
+  export $(cat $HOME/.config/user-dirs.dirs | grep PICTURES)
+  # Cut from " to /.  Ex:"$HOME/Picures" -> Pictures"
+  XDG_PICTURES_DIR=$(echo ${XDG_PICTURES_DIR#\"*/})
+  # Cut off the last ". Ex: Pictures" -> Pictures
+  XDG_PICTURES_DIR=$(echo ${XDG_PICTURES_DIR%\"})
+  # Ex. Pictures -> /home/user/Pictures/Wallpapers
+  rwp_dir=$HOME/$XDG_PICTURES_DIR/Wallpapers
+
+  # Use .rwp.cfg if it exists
+  if [[ -f $HOME/.rwp.cfg ]]; then
+    rwp_cfg_file_set=1
+    rwp_cfg=$HOME/.rwp.cfg
+  else
+    rwp_cfg_file_set=0
+  fi
+}
+
+# Handle Options
+rwp_getopts () {
+  while getopts "h?t:d:c:w:lC:" rwp_opt; do
+    case "$rwp_opt" in
+    h|\?)
+        echo "
+  Usage: randomwallpaper [OPTIONS]
+
+  Options:
+   -t <time>                Set global wait time (default:1m)
+   -d <DIR>                 Set wallpaper directory (default:$HOME/$XDG_PICTURES_DIR/Wallpapers)
+   -c <config file>         Use config file to set wait time for individual images
+   -w <wallpaper handler>   Set wallpaper handler manually (default:auto)
+   -C <custom command>      Define your own command to loop, ignores -w.
+   -l                       List all wallpaper handlers
+   -h or -?                 Show help (this message)
+  "
+        exit 0
+      ;;
+    t)
+      rwp_sleep_time_def=$OPTARG
+      ;;
+    d)
+      rwp_dir=$OPTARG
+      ;;
+    c)
+      rwp_cfg=$OPTARG
+      rwp_cfg_file_set=1
+      ;;
+    w)
+      case $OPTARG in
+      MATE|mate)
+          rwp_handler=mate
+          ;;
+      GNOME|gnome)
+          rwp_handler=gnome
+          ;;
+      XFCE|xfce)
+          rwp_handler=xfce
+          ;;
+      LXDE|lxde)
+          rwp_handler=pcmanfm
+          rwp_handler_display=LXDE
+          ;;
+      pcmanfm)
+          rwp_handler=pcmanfm
+          ;;
+      Cinnamon|cinnamon)
+          rwp_handler=cinnamon
+          ;;
+      feh)
+          rwp_handler=feh
+          ;;
+      deepin|Deepin)
+          rwp_handler=deepin
+          ;;
+      *)
+          echo $rwp_handlers_list
+          exit 1
+      esac
+      ;;
+    l)
+      echo $rwp_handlers_list
+      exit 0
+      ;;
+    C)
+      rwp_custom_command=$OPTARG
+      rwp_handler=custom
+    esac
+  done
+
+  # check is $rwp_dir exist
+  if ls $rwp_dir > /dev/null; then
+    rwp_files=($rwp_dir/*)
+  else
+    echo "$rwp_dir does not exist"
+    exit 1
+  fi
+}
 
 # Main Loop
 # rwp_loop <WP handler>
@@ -274,6 +268,13 @@ rwp_exit () {
 
 
 #### Main Logic ####
+
+rwp_init_vars
+rwp_getopts "$@"
+
+echo "rwp_sleep_time_def is $rwp_sleep_time_def"
+echo "rwp_dir is $rwp_dir"
+echo "rwp_cfg is $rwp_cfg"
 
 if [[ $rwp_handler == auto ]]; then
   # Detect Desktop
