@@ -1,0 +1,104 @@
+#!/bin/bash
+
+desc_reset () {
+  desc_pv_yn=""
+  desc_pv=false
+  desc_feat_yn=""
+  dft_name=""
+  dft_feat=""
+  dft_extra=""
+}
+
+desc_ask_pv () {
+  while :; do
+    read -p "Is a PV made? (y/n) " desc_pv_yn
+    case $desc_pv_yn in
+      [Yy]* )
+      desc_pv=true
+      break
+      ;;
+      [Nn]* )
+      desc_pv=false
+      break
+      ;;
+      *) echo "Please input y/n"
+    esac
+  done
+}
+
+desc_ask_title () {
+  read -p "Name: " dft_name
+}
+
+desc_ask_feat () {
+  while :; do
+    read -p "Is there a ft. field? (y/n) " desc_feat_yn
+    case $desc_feat_yn in
+      [Yy]* )
+      read -p "Feat: " dft_feat
+      break
+      ;;
+      [Nn]* )
+      dft_feat=""
+      ;;
+      *) echo "Please input y/n"
+    esac
+  done
+}
+
+desc_ask_extratags () {
+  desc_extra_tag=()
+  i=0
+  while :; do
+    read -p "Is there more extra tags? (y/n) " desc_extra_more
+    case $desc_extra_more in
+      [Yy]* )
+      read -p "Extra tag: " desc_extra_tag[$i]
+      i=$((i+1))
+      ;;
+      [Nn]* )
+      break
+      ;;
+      *) echo "Please input y/n"
+    esac
+  done
+}
+
+desc_ask_original_links () {
+  echo write none to not include that
+  read -p "Original Link (Youtube): " desc_orig_yt
+  read -p "Original Link (niconico): " desc_orig_nico
+}
+
+desc_print_title () {
+  # pv
+  if [[ $desc_pv == true ]]; then
+    dft_pv=【PV】
+  else
+    dft_pv=""
+  fi
+
+  # repeat print extra tag for (its length) times.
+  for (( i = 0; i < "${#desc_extra_tag[@]}"; i++ )); do
+    dft_extra=$dft_extra【${desc_extra_tag[i]}】
+  done
+
+  echo $dft_pv $dft_name ft.$dft_feat $dft_extra
+}
+
+desc_print_desc () {
+  echo $dfd_upload_comment
+
+  for (( i = 0; "${#desc_extra_lines[@]}"; i++ )); do
+    echo $dfd_extra
+  done
+}
+
+desc_reset
+desc_ask_title
+desc_ask_feat
+desc_ask_pv
+desc_ask_extratags
+
+echo Title:
+desc_print_title
