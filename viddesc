@@ -79,6 +79,7 @@ desc_print_title () {
   fi
 
   # repeat print extra tag for (its length) times.
+  # this is needed for adding 【】 around each tag.
   for (( i = 0; i < "${#desc_extra_tag[@]}"; i++ )); do
     dft_extra=$dft_extra【${desc_extra_tag[i]}】
   done
