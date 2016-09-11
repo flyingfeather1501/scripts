@@ -89,10 +89,17 @@ desc_print_title () {
 desc_print_desc () {
   echo $dfd_upload_comment
 
+  echo $orig_credits
+  echo $orig_link
+  echo $UST_link
+  echo $link_to_other_site
+
   for (( i = 0; "${#desc_extra_lines[@]}"; i++ )); do
     echo $dfd_extra
   done
 }
+
+# TODO: desc_print_desc
 
 desc_reset
 desc_ask_title
