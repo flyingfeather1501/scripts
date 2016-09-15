@@ -1,26 +1,43 @@
 #!/bin/bash
 OPTIND=1
 rma_remove_files=0
+rma_input_file=""
+
+rma_print_help () {
+  echo "
+Usage: rmaudio <-f INPUT> [OPTIONS]
+
+Options:
+ -f                       Input file
+ -d                       Remove input file after conversion
+ -h or -?                 Show help (this message)
+"
+}
+
+if [[ -z ${1+x} ]]; then
+  rma_print_help
+  exit 1
+fi
 
 while getopts "h?d" rma_opt; do
   case "$rma_opt" in
   h|\?)
-      echo "
-Usage: rmaudio [OPTIONS]
-
-Options:
- -d                       Remove input file after conversion
- -h or -?                 Show help (this message)
-"
-      exit 0
+    rma_print_help
+    exit 0
     ;;
   d)
     rma_remove_files=1
     ;;
+  f)
+    rma_file=$OPTARG
+    ;;
+  *)
+    rma_print_help
+    exit 1
   esac
 done
 
-ffmpeg -i $1 -an -c:v copy "$(echo ${1%.*})_noaudio.mp4"
+ffmpeg -i $rma_input_file -an -c:v copy "$(echo ${rma_input_file%.*})_noaudio.mp4"
 if [[ $rma_remove_files == 1 ]]; then
-  rm $1
+  rm $rma_input_file
 fi
