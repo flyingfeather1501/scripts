@@ -34,8 +34,8 @@ Terminating"
   exit 0
 }
 
-# if $1 is absent
-if [[ -z ${1+x} ]]; then
+# if $2 is absent
+if [[ -z ${2+x} ]]; then
   loop_print_help
   exit 1
 fi
