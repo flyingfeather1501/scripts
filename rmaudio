@@ -19,7 +19,7 @@ if [[ -z ${1+x} ]]; then
   exit 1
 fi
 
-while getopts "h?d" rma_opt; do
+while getopts "h?df:" rma_opt; do
   case "$rma_opt" in
   h|\?)
     rma_print_help
@@ -37,7 +37,7 @@ while getopts "h?d" rma_opt; do
   esac
 done
 
-ffmpeg -i $rma_input_file -an -c:v copy "$(echo ${rma_input_file%.*})_noaudio.mp4"
+ffmpeg -i $rma_file -an -c:v copy "$(echo ${rma_file%.*})_noaudio.mp4"
 if [[ $rma_remove_files == 1 ]]; then
-  rm $rma_input_file
+  rm $rma_file
 fi
