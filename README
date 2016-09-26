@@ -30,5 +30,5 @@ Options:
  -h or -?                 Show help (this message)
 "
 
-run-only-one-instance [COMMAND]
+run-one-instance-only [COMMAND]
 wrapper to run COMMAND only when "killall -e -0" returned false, ie. when COMMAND is not running.
