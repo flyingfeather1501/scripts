@@ -12,7 +12,7 @@ rwp_init_vars () {
   rwp_handler=auto
   rwp_cfg_used=0
   rwp_cfg=none
-  rwp_handlers_list="Available wallpaper handlers: mate, gnome, xfce, lxde, pcmanfm, cinnamon, feh, deepin"
+  rwp_handlers_list="Available wallpaper handlers: mate, gnome, xfce, lxde, pcmanfm, pcmanfm-qt, cinnamon, feh, deepin"
 
   # Get XDG_PICTURES_DIR from .config/user-dirs.dirs. Ex:"$HOME/Pictures"
   export $(cat $HOME/.config/user-dirs.dirs | grep PICTURES)
@@ -77,6 +77,9 @@ rwp_getopts () {
           ;;
       pcmanfm)
           rwp_handler=pcmanfm
+          ;;
+      pcmanfm-qt)
+          rwp_handler=pcmanfm-qt
           ;;
       Cinnamon|cinnamon)
           rwp_handler=cinnamon
@@ -195,6 +198,13 @@ rwp_detect () {
     rwp_handler=pcmanfm
     rwp_handler_display=LXDE
 
+  # LXQt
+  elif [[
+  $XDG_CURRENT_DESKTOP == "LXQt" ||
+  $GDMSESSION == "lxqt" ]]; then
+    rwp_handler=pcmanfm-qt
+    rwp_handler_display=LXQt
+
   # Deepin
   elif [[
   $XDG_CURRENT_DESKTOP == "Deepin" ||
@@ -229,6 +239,10 @@ rwp_set_feh () {
 
 rwp_set_pcmanfm () {
   pcmanfm --set-wallpaper "$1"
+}
+
+rwp_set_pcmanfm-qt () {
+  pcmanfm-qt --set-wallpaper "$1"
 }
 
 rwp_set_xfce () {
