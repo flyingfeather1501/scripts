@@ -139,15 +139,15 @@ rwp_loop () {
 
 
 rwp_detect () {
-# Detect DE in use and start loops
+  # Detect DE in use and start loops
 
-# MATE
+  # MATE
   if [[
   $XDG_CURRENT_DESKTOP == "MATE" ||
   $XDG_CURRENT_DESKTOP == "mate" ]]; then
     rwp_handler=mate
 
-# Budgie
+  # Budgie
   elif [[
   $XDG_SESSION_DESKTOP == "budgie-desktop" ||
   $DESKTOP_SESSION == "budgie-desktop" ||
@@ -155,7 +155,7 @@ rwp_detect () {
     rwp_handler=gnome
     rwp_handler_display=Budgie
 
-# Pantheon
+  # Pantheon
   elif [[
   $XDG_SESSION_DESKTOP == "pantheon" ||
   $DESKTOP_SESSION == "pantheon" ||
@@ -163,7 +163,7 @@ rwp_detect () {
     rwp_handler=gnome
     rwp_handler_display=Pantheon
 
-# GNOME & Cinnamon
+  # GNOME & Cinnamon
   elif [[
   $XDG_CURRENT_DESKTOP == "GNOME" ||
   $XDG_CURRENT_DESKTOP == "gnome" ]]; then
@@ -173,11 +173,11 @@ rwp_detect () {
       rwp_handler=gnome
     fi
 
-# Cinnamon
+  # Cinnamon
   elif [[ $XDG_CURRENT_DESKTOP == "X-Cinnamon" ]]; then
     rwp_handler=cinnamon
 
-# Unity
+  # Unity
   elif [[ $XDG_CURRENT_DESKTOP == "Unity" ]]; then
     if [[ -z ${MIR_SERVER_NAME+x} ]]; then # Check if Mir is in use
       rwp_handler=gnome # It's not
@@ -186,26 +186,26 @@ rwp_detect () {
       rwp_exit "Unity with Mir" # It is
     fi
 
-# XFCE
+  # XFCE
   elif [[ $XDG_CURRENT_DESKTOP == "XFCE" ]]; then
     rwp_handler=xfce
 
-# LXDE
+  # LXDE
   elif [[ $XDG_CURRENT_DESKTOP == "LXDE" ]]; then
-    rwp_handler=lxde
+    rwp_handler=pcmanfm
     rwp_handler_display=LXDE
 
-# Deepin
+  # Deepin
   elif [[
   $XDG_CURRENT_DESKTOP == "Deepin" ||
   $GDMSESSION == "deepin" ]]; then
     rwp_handler=deepin
 
-# KDE
+  # KDE
   elif [[ $GDMSESSION == "plasma_desktop" ]]; then
     rwp_exit "KDE Plasma"
 
-# Other
+  # Other
   else
     rwp_exit "Desktop in use"
   fi
