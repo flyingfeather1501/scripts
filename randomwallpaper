@@ -9,10 +9,10 @@ rwp_init_vars () {
   OPTIND=1
   rwp_sleep_time_def=1m
   rwp_cfg_file_set=0
-  rwp_handler=auto
+  rwp_handler=('auto')
   rwp_cfg_used=0
   rwp_cfg=none
-  rwp_handlers_list="Available wallpaper handlers: mate, gnome, xfce, lxde, pcmanfm, pcmanfm-qt, cinnamon, feh, deepin"
+  rwp_handler_list=(mate gnome xfce pcmanfm pcmanfm-qt cinnamon feh deepin)
 
   # Get XDG_PICTURES_DIR from .config/user-dirs.dirs. Ex:"$HOME/Pictures"
   export $(cat $HOME/.config/user-dirs.dirs | grep PICTURES)
@@ -61,42 +61,42 @@ rwp_getopts () {
       rwp_cfg_file_set=1
       ;;
     w)
+      rwp_handler[0]=noauto
       case $OPTARG in
       MATE|mate)
-          rwp_handler=mate
+          rwp_handler+=('mate')
           ;;
       GNOME|gnome)
-          rwp_handler=gnome
+          rwp_handler+=('gnome')
           ;;
       XFCE|xfce)
-          rwp_handler=xfce
+          rwp_handler+=('xfce')
           ;;
       LXDE|lxde)
-          rwp_handler=pcmanfm
-          rwp_handler_display=LXDE
+          rwp_handler+=('pcmanfm')
           ;;
       pcmanfm)
-          rwp_handler=pcmanfm
+          rwp_handler+=('pcmanfm')
           ;;
       pcmanfm-qt)
-          rwp_handler=pcmanfm-qt
+          rwp_handler+=('pcmanfm-qt')
           ;;
       Cinnamon|cinnamon)
-          rwp_handler=cinnamon
+          rwp_handler+=('cinnamon')
           ;;
       feh)
-          rwp_handler=feh
+          rwp_handler+=('feh')
           ;;
       deepin|Deepin)
-          rwp_handler=deepin
+          rwp_handler+=('deepin')
           ;;
       *)
-          echo $rwp_handlers_list
+          IFS=,; echo Available wallpaper handlers: "${rwp_handler_list[*]}"
           exit 1
       esac
       ;;
     l)
-      echo $rwp_handlers_list
+      IFS=,; echo Available wallpaper handlers: "${rwp_handler_list[*]}"
       exit 0
       ;;
     esac
@@ -134,8 +134,13 @@ rwp_loop () {
       echo rwp_sleep_time for this image is not specified in config
     fi
 
-    # using variable as input needs "" to handle spaces correctly
-    rwp_set_$1 "$rwp_wallpaper"
+    # for every handler, if $rwp_handler contains a handler, run it
+    # No need to worry about auto, if $rwp_handler == auto it'd be set to
+    # something else in rwp_detect
+    for i in "${rwp_handler_list[@]}"; do
+      [[ ${rwp_handler[*]} =~ $i ]] && rwp_set_$i "$rwp_wallpaper"
+    done
+
     sleep $rwp_sleep_time
   done
 }
@@ -148,68 +153,63 @@ rwp_detect () {
   if [[
   $XDG_CURRENT_DESKTOP == "MATE" ||
   $XDG_CURRENT_DESKTOP == "mate" ]]; then
-    rwp_handler=mate
+    rwp_handler=('mate')
 
   # Budgie
   elif [[
   $XDG_SESSION_DESKTOP == "budgie-desktop" ||
   $DESKTOP_SESSION == "budgie-desktop" ||
   $GDMSESSION == "budgie-desktop" ]]; then
-    rwp_handler=gnome
-    rwp_handler_display=Budgie
+    rwp_handler=('gnome')
 
   # Pantheon
   elif [[
   $XDG_SESSION_DESKTOP == "pantheon" ||
   $DESKTOP_SESSION == "pantheon" ||
   $GDMSESSION == "pantheon" ]]; then
-    rwp_handler=gnome
-    rwp_handler_display=Pantheon
+    rwp_handler=('gnome')
 
   # GNOME & Cinnamon
   elif [[
   $XDG_CURRENT_DESKTOP == "GNOME" ||
   $XDG_CURRENT_DESKTOP == "gnome" ]]; then
     if [[ $GDMSESSION == "cinnamon" ]]; then
-      rwp_handler=cinnamon
+      rwp_handler=('cinnamon')
     else
-      rwp_handler=gnome
+      rwp_handler=('gnome')
     fi
 
   # Cinnamon
   elif [[ $XDG_CURRENT_DESKTOP == "X-Cinnamon" ]]; then
-    rwp_handler=cinnamon
+    rwp_handler=('cinnamon')
 
   # Unity
   elif [[ $XDG_CURRENT_DESKTOP == "Unity" ]]; then
     if [[ -z ${MIR_SERVER_NAME+x} ]]; then # Check if Mir is in use
-      rwp_handler=gnome # It's not
-      rwp_handler_display=Unity
+      rwp_handler=('gnome') # It's not
     else
       rwp_exit "Unity with Mir" # It is
     fi
 
   # XFCE
   elif [[ $XDG_CURRENT_DESKTOP == "XFCE" ]]; then
-    rwp_handler=xfce
+    rwp_handler=('xfce')
 
   # LXDE
   elif [[ $XDG_CURRENT_DESKTOP == "LXDE" ]]; then
-    rwp_handler=pcmanfm
-    rwp_handler_display=LXDE
+    rwp_handler=('pcmanfm')
 
   # LXQt
   elif [[
   $XDG_CURRENT_DESKTOP == "LXQt" ||
   $GDMSESSION == "lxqt" ]]; then
-    rwp_handler=pcmanfm-qt
-    rwp_handler_display=LXQt
+    rwp_handler=('pcmanfm-qt')
 
   # Deepin
   elif [[
   $XDG_CURRENT_DESKTOP == "Deepin" ||
   $GDMSESSION == "deepin" ]]; then
-    rwp_handler=deepin
+    rwp_handler=('deepin')
 
   # KDE
   elif [[ $GDMSESSION == "plasma_desktop" ]]; then
@@ -281,21 +281,17 @@ fi
 echo "rwp_sleep_time_def is $rwp_sleep_time_def"
 echo "rwp_dir is $rwp_dir"
 echo "rwp_cfg is $rwp_cfg"
-
-if [[ $rwp_handler == auto ]]; then
+echo ${rwp_handler[*]}
+if [[ ${rwp_handler[0]} == auto ]]; then
   # Detect Desktop
   rwp_detect # will set rwp_handler according to environment variables
 
-  if [[ -z ${rwp_handler_display+x} ]]; then # Check for rwp_handler_display
-    echo "Looping random wallpaper for: $rwp_handler" # it does not exist
-  else
-    echo "Looping random wallpaper for: $rwp_handler_display" # it exists
-  fi
+  echo "Wallpaper handlers: ${rwp_handler[*]}" # it does not exist
 
-  rwp_loop $rwp_handler
+  rwp_loop
 else # when rwp_handler is set
-  echo "Looping random wallpaper for: $rwp_handler"
-  rwp_loop $rwp_handler
+  echo "Wallpaper handlers: ${rwp_handler[*]}"
+  rwp_loop
 fi
 
 #~~~ Main Logic ~~~#
