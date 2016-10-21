@@ -8,7 +8,7 @@ rma_print_help () {
 Usage: rmaudio <-f INPUT> [OPTIONS]
 
 Options:
- -f                       Input file
+ -i                       Input file
  -d                       Remove input file after conversion
  -h or -?                 Show help (this message)
 "
@@ -19,7 +19,7 @@ if [[ -z ${1+x} ]]; then
   exit 1
 fi
 
-while getopts "h?df:" rma_opt; do
+while getopts "h?di:" rma_opt; do
   case "$rma_opt" in
   h|\?)
     rma_print_help
@@ -28,7 +28,7 @@ while getopts "h?df:" rma_opt; do
   d)
     rma_remove_files=1
     ;;
-  f)
+  i)
     rma_file=$OPTARG
     ;;
   *)
