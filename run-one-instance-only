@@ -1,6 +1,6 @@
 #!/bin/bash
 roio_command=$1
-roio_full_command="$@"
+roio_full_command="$*"
 
 if killall -q -e -0 $roio_command; then
   # killall -0 succeeded, roio_command running
