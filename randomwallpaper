@@ -8,6 +8,7 @@ rwp_init_vars () {
   # Initialize variables with default values
   OPTIND=1
   rwp_sleep_time_def=1m
+  rwp_sleep_first=0
   rwp_cfg_file_set=0
   rwp_handler=('auto')
   rwp_cfg_used=0
@@ -34,7 +35,7 @@ rwp_init_vars () {
 
 # Handle Options
 rwp_getopts () {
-  while getopts "h?t:d:c:w:l" rwp_opt; do
+  while getopts "h?t:d:c:w:ls" rwp_opt; do
     case "$rwp_opt" in
     h|\?)
         echo "
@@ -43,6 +44,7 @@ rwp_getopts () {
   Options:
    -t <time>                Set global wait time (default:1m)
    -d <DIR>                 Set wallpaper directory (default:$HOME/$XDG_PICTURES_DIR/Wallpapers)
+   -s                       Change wallpaper after sleeping, prevents immediate change on execution
    -c <config file>         Use config file to set wait time for individual images
    -w <wallpaper handler>   Set wallpaper handler manually (default:auto)
    -l                       List all wallpaper handlers
@@ -95,6 +97,9 @@ rwp_getopts () {
           exit 1
       esac
       ;;
+    s)
+      rwp_sleep_first=1
+      ;;
     l)
       IFS=,; echo Available wallpaper handlers: "${rwp_handler_list[*]}"
       exit 0
@@ -108,10 +113,12 @@ rwp_getopts () {
 rwp_loop () {
 
   while :; do
+
     # Rescan file list
     rwp_files=($rwp_dir/*)
     # Randomly select a file
     rwp_wallpaper=$(printf "%s\n" "${rwp_files[RANDOM % ${#rwp_files[@]}]}")
+
 
     # Read rwp_sleep_time only when config file is set
     if [[ $rwp_cfg_file_set == 1 ]]; then
@@ -134,6 +141,12 @@ rwp_loop () {
       echo rwp_sleep_time for this image is not specified in config
     fi
 
+
+    # sleep first if $rwp_sleep_first=1
+    if [[ $rwp_sleep_first == 1 ]]; then
+      sleep $rwp_sleep_time
+    fi
+
     # for every handler, if $rwp_handler contains a handler, run it
     # No need to worry about auto, if $rwp_handler == auto it'd be set to
     # something else in rwp_detect
@@ -141,7 +154,11 @@ rwp_loop () {
       [[ ${rwp_handler[*]} =~ $i ]] && rwp_set_$i "$rwp_wallpaper"
     done
 
-    sleep $rwp_sleep_time
+    # sleep after if $rwp_sleep_first=0
+    if [[ $rwp_sleep_first == 0 ]]; then
+      sleep $rwp_sleep_time
+    fi
+
   done
 }
 
