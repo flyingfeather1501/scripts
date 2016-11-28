@@ -11,8 +11,12 @@ loop_print_help () {
   echo "
 Usage: loop-command <sleep time> <chance of not running> <command> [command args...]
 
+Arguments:
+ sleep time: passed to the sleep builtin
+ chance of not running: compared against \$RANDOM, so it's out of 32767
+
 Options:
--h or -?                 Show help (this message)
+ -h or -?                 Show help (this message)
 "
 }
 
