@@ -1,8 +1,10 @@
 #!/bin/bash
 
 print_help_and_exit () {
-  echo "Usage: random-notifications <title txt file> [body text file] [icon path file]"
-  echo "line n of each file will be picked and used to send notification"
+  echo "Usage: random-notifications <title txt file> [body text file] [icon path file] [line to print]"
+  echo " A random line from each file will be picked and used to send notification"
+  echo " unless the fourth argument is given, which would be used instead of a random number."
+  echo " Use /dev/null for skipping a field."
   exit $1
 }
 
@@ -29,7 +31,7 @@ mapfile -t bodyarray < "$body_txt"
 mapfile -t iconpatharray < "$iconpath_txt"
 size=${#titlearray[@]}
 
-rand=$(( ( RANDOM % size )  + 1 ))
+if [[ -z ${4+x} ]]; then rand=$(( ( RANDOM % size )  + 1 )); else rand=$4; fi
 
 #RED='\033[1;33m'
 #PURPLE='\033[0;35m'
