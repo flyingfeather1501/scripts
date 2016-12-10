@@ -12,16 +12,6 @@ if [[ $1 == "-h" || $1 == "--help" ]]; then
   print_help_and_exit 0
 fi
 
-# Find current dir, copied from
-# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-which-directory-it-is-stored-in
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
-done
-DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-
 if [[ -z ${1+x} ]]; then print_help_and_exit 1; else title_txt="$1"; fi
 if [[ -z ${2+x} ]]; then body_txt="/dev/null"; else body_txt="$2"; fi
 if [[ -z ${3+x} ]]; then iconpath_txt="/dev/null"; else iconpath_txt="$3"; fi
