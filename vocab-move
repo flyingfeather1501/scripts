@@ -1,0 +1,28 @@
+#!/bin/bash
+## TODO: Move all of this vocabulary solution to its own repo
+
+print_help_and_exit () {
+  echo "Usage:vocab-move <the vocabulary> <original period> <target period>"
+  echo " Periods can be one of 30m, 1d, 30d, or 1y."
+  echo " Original and target periods cannot be the same."
+  exit $1
+}
+
+vocab=$1
+case $2 in
+  30m|1d|30d|1y)orig_time=$2;;
+  *)print_help_and_exit 1;;
+esac
+
+case $3 in
+  $2)print_help_and_exit 1;;
+  30m|1d|30d|1y)targ_time=$3;;
+  *)print_help_and_exit 1;;
+esac
+
+line=$(sed -n /"$vocab"/= ~/git/text-files/vocab-word-"$orig_time".txt)
+echo line = $line
+for i in meaning word; do
+    sed -n "$line"p ~/git/text-files/vocab-"$i"-"$orig_time".txt >> ~/git/text-files/vocab-"$i"-"$targ_time".txt
+    sed -i -e "$line"d ~/git/text-files/vocab-"$i"-"$orig_time".txt
+done
