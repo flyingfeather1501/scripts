@@ -29,5 +29,7 @@ if [[ -z ${4+x} ]]; then rand=$(( ( RANDOM % size )  + 1 )); else rand=$4; fi
 #bold=$(tput bold)
 #normal=$(tput sgr0)
 
+echo $rand
+
 # notify-send [OPTION...] <SUMMARY> [BODY] - create a notification
 notify-send --icon="${iconpatharray[rand-1]}" "${titlearray[rand-1]}" "${bodyarray[rand-1]}"
