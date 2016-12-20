@@ -16,6 +16,13 @@ if [[ -z ${1+x} ]]; then print_help_and_exit 1; else title_txt="$1"; fi
 if [[ -z ${2+x} ]]; then body_txt="/dev/null"; else body_txt="$2"; fi
 if [[ -z ${3+x} ]]; then iconpath_txt="/dev/null"; else iconpath_txt="$3"; fi
 
+if [[ -s $title_text ]]; then
+  true
+else
+  echo "Title file must not be empty"
+  exit 1
+fi
+
 mapfile -t titlearray < "$title_txt" # title = summary
 mapfile -t bodyarray < "$body_txt"
 mapfile -t iconpatharray < "$iconpath_txt"
