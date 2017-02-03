@@ -1,0 +1,5 @@
+#!/bin/bash
+# Sends input to xclip
+
+echo "$@" | xclip -r -sel clip
+echo "$@" | xclip -r -sel prim
