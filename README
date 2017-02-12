@@ -1,18 +1,2 @@
-Scripts
-
-
-loop-command <sleep time> <command> [command args...]
-
-Options:
--h or -?                 Show help (this message)
-
-
-rmaudio [OPTIONS]
-
-Options:
- -d                       Remove input file after conversion
- -h or -?                 Show help (this message)
-"
-
-run-one-instance-only [COMMAND]
-wrapper to run COMMAND only when "killall -e -0" returned false, ie. when COMMAND is not running.
+(Mostly) Bash scripts by Moonlight Feather.
+Uses the Unlicense.
