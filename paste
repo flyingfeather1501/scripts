@@ -1,0 +1,4 @@
+#!/bin/bash
+# do the same thing Ctrl-v does
+# a simple wrapper to complement `copy`
+xclip -o -sel clip
