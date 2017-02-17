@@ -3,7 +3,7 @@
 
 # Read stdin if no argument given
 if [[ -z ${1+x} ]];then
-  read string
+  string=$(cat)
 else
   string="$@"
 fi
