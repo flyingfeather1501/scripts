@@ -5,7 +5,7 @@
 if [[ -z ${1+x} ]];then
   string=$(cat)
 else
-  string="$@"
+  string="$*"
 fi
 echo "$string" | xclip -r -sel clip
 echo "$string" | xclip -r -sel prim
