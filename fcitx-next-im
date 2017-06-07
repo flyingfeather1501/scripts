@@ -1,0 +1,12 @@
+#!/bin/bash
+# Switch to next fcitx input method in a currently hard coded array
+
+current_im="$(qdbus org.fcitx.Fcitx /inputmethod org.fcitx.Fcitx.InputMethod.GetCurrentIM)"
+im_list=(fcitx-keyboard-us mozc rime hangul)
+new_im=""
+
+# figure out which index the current im is, add one to it and wrap around as new im index
+for i in $(seq 0 $(( ${#im_list[@]} - 1 )) ); do
+  [ ${im_list[$i]} == $current_im ] && new_im=${im_list[ $(( (i + 1) % ${#im_list[@]} )) ]}
+done
+fcitx-remote -s $new_im
