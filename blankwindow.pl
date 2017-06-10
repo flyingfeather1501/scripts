@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
-use Tkx;
+use Tk;
 
-my $window = Tkx::widget->new(".");
-$window->g_wm_title("");
-Tkx::MainLoop;
-
+my $blkwin = MainWindow->new();
+$blkwin->geometry("600x200");
+MainLoop();
