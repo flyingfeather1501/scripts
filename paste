@@ -1,4 +1,3 @@
 #!/bin/bash
 # shorthand to echo the clipboard
-clipboard=$(xclip -o -sel clip)
-echo $@ $clipboard
+echo $@ "$(xclip -o -sel clip)"
