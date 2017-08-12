@@ -18,8 +18,8 @@ for i in $(seq 0 $(( ${#im_list[@]} - 1 )) ); do
   new_index=$(python -c "print(($i+1) % ${#im_list[@]})")
   if [ ${im_list[$i]} == $current_im ]; then
     case $mode in
-      "next")new_im=$(python -c "print(($i + 1) % ${#im_list[@]})");;
-      "prev")new_im=$(python -c "print(($i - 1) % ${#im_list[@]})");;
+      "next")new_im=${im_list[ $((($i +1) % ${#im_list[@]})) ]};;
+      "prev")new_im=${im_list[$(lua -e "print(($i - 1) % ${#im_list[@]})")]};;
       *)echo "mode should be next or prev";;
     esac
   fi
