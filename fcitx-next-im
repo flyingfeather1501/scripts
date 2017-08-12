@@ -5,8 +5,24 @@ current_im="$(qdbus org.fcitx.Fcitx /inputmethod org.fcitx.Fcitx.InputMethod.Get
 im_list=(fcitx-keyboard-us mozc rime hangul)
 new_im=""
 
+# accept $1 for setting direction
+# $1: "next" or "prev"
+case $1 in
+  "next")mode=next;;
+  "prev")mode=prev;;
+  *)mode=next;;
+esac
+
 # figure out which index the current im is, add one to it and wrap around as new im index
 for i in $(seq 0 $(( ${#im_list[@]} - 1 )) ); do
-  [ ${im_list[$i]} == $current_im ] && new_im=${im_list[ $(( (i + 1) % ${#im_list[@]} )) ]}
+  new_index=$(python -c "print(($i+1) % ${#im_list[@]})")
+  if [ ${im_list[$i]} == $current_im ]; then
+    case $mode in
+      "next")new_im=$(python -c "print(($i + 1) % ${#im_list[@]})");;
+      "prev")new_im=$(python -c "print(($i - 1) % ${#im_list[@]})");;
+      *)echo "mode should be next or prev";;
+    esac
+  fi
 done
+
 fcitx-remote -s $new_im
