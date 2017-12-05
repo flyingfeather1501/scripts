@@ -1,3 +1,4 @@
+#!/usr/bin/env racket
 #lang at-exp racket
 
 (require net/url
