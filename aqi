@@ -1,12 +1,26 @@
-#!/bin/bash
-
-read -r -d '' partial_racket_source <<'RKT'
 #lang at-exp racket
 
 (require net/url
          data/collection
          threading
          json)
+
+; I definitely should not put this here... whatever
+(define term/bold "$(tput bold)")
+(define term/normal "$(tput sgr0)")
+(define term/red "$(tput setaf 1)")
+(define term/green "$(tput setaf 2)")
+(define term/orange "$(tput setaf 3)")
+(define term/magenta "$(tput setaf 4)")
+@define[term/darkpurple]{"\033[38;5;91m"}
+@define[term/yellow]{"\033[38;5;220m"}
+
+(define (echo string
+              #:prefix [prefix ""]
+              #:suffix [suffix term/normal])
+  (void (system (string-append "echo -en " prefix
+                               string
+                               suffix))))
 
 (define (get-json url #:cleanup [cleanup identity])
    (call/input-url (string->url url)
@@ -19,29 +33,22 @@ read -r -d '' partial_racket_source <<'RKT'
 
 (define AQI.json (get-json "http://opendata2.epa.gov.tw/AQI.json"))
 
-; I definitely should not put this here... whatever
-(define term/bold "$(tput bold)")
-(define term/normal "$(tput sgr0)")
-(define term/red "$(tput setaf 1)")
-(define term/green "$(tput setaf 2)")
-(define term/orange "$(tput setaf 3)")
-(define term/magenta "$(tput setaf 4)")
-(define term/darkpurple "\033[38;5;91m")
-(define term/yellow "\033[38;5;220m")
+(define sites
+  (~> (map (λ (x) (ref x 'SiteName))
+           AQI.json)
+      sequence->list))
 
-(define (echo string
-              #:prefix [prefix ""]
-              #:suffix [suffix term/normal])
-  (void (system (string-append "echo -n " prefix
-                               string
-                               suffix))))
+(define (list-sites)
+  (displayln (string-join sites)))
 
 (define (aqi [sitename "士林"])
+  (unless (member sitename sites)
+    (error 'aqi "觀測站「~a」不存在" sitename))
+
   (define local.json
     (~> AQI.json
-    (filter (λ (x) (equal? (hash-ref x 'SiteName) sitename))
-            _)
-        sequence->list ; 1-element list of a hash
+        (filter (λ (x) (equal? (hash-ref x 'SiteName) sitename))
+                _)
         first))
 
   (echo "AQI: " #:prefix term/bold #:suffix term/normal)
@@ -59,34 +66,35 @@ read -r -d '' partial_racket_source <<'RKT'
   
   (displayln @string-append{ (@ref[local.json 'County]/@sitename)}))
 
-(define (list-sites)
-  (~> (map (λ (x) (ref x 'SiteName))
-           AQI.json)
-      sequence->list
-      string-join
-      displayln))
+(define (display-help)
+  @displayln{
+ aqi [觀測站]: 回報觀測站AQI
+ aqi [-l|--list]: 觀測站列表
+ aqi [-h|--help]: 顯示本說明
+})
 
-RKT
+(if (empty? (vector->list (current-command-line-arguments)))
+    (aqi)
+    (case (first (current-command-line-arguments))
+      [("-l" "--list") (list-sites)]
+      [("-h" "--help") (display-help)]
+      [else (aqi (first (current-command-line-arguments)))]))
+      
+;; RKT
 
-# shellcheck disable=SC2086
-help="
- $(basename $0) [觀測站]: 回報觀測站AQI
- $(basename $0) [-l|--list]: 觀測站列表
- $(basename $0) [-h|--help]: 顯示本說明
-"
 
-case "$1" in
-    -l|--list)
-        racket_source=${partial_racket_source}"(list-sites)"
-        ;;
-    -h|--help|-?) echo "$help"; exit 0 ;;
-    "") racket_source=${partial_racket_source}"(aqi)" ;;
-    *) racket_source=${partial_racket_source}"(aqi \"$1\")"
-esac
+;; case "$1" in
+;;     -l|--list)
+;;         racket_source=${partial_racket_source}"(list-sites)"
+;;         ;;
+;;     -h|--help|-?) echo "$help"; exit 0 ;;
+;;     "") racket_source=${partial_racket_source}"(aqi)" ;;
+;;     *) racket_source=${partial_racket_source}"(aqi \"$1\")"
+;; esac
 
-racket <(echo "$racket_source")
+;; racket <(echo "$racket_source")
 
-# http://ergoemacs.org/emacs_manual/emacs/Specifying-File-Variables.html
-# Local Variables:
-# mode: racket
-# End:
+;; # http://ergoemacs.org/emacs_manual/emacs/Specifying-File-Variables.html
+;; # Local Variables:
+;; # mode: racket
+;; # End:
