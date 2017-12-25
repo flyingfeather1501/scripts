@@ -13,7 +13,7 @@
   (~> (string-split output "\n")
       (map (λ (x) (string-split x "\t")) _) ; '(("3" "./file") ("10" "./file2"))
       (map (λ (x) (hasheq 'size (first x)
-                          'filename (second x)))
+                          'name (second x)))
            _)
       jsexpr->string
       displayln))
