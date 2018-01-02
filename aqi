@@ -64,15 +64,15 @@
             [(> aqi 50) term/yellow]
             [(<= aqi 50) term/green]
             [else term/normal])))
-  
+
   (displayln @string-append{ (@ref[local.json 'County]/@sitename)}))
 
 (define (display-help)
-  @displayln{
- aqi [觀測站]: 回報觀測站AQI
- aqi [-l|--list]: 觀測站列表
- aqi [-h|--help]: 顯示本說明
-})
+ (displayln
+ @string-append{
+  aqi [觀測站]: 回報觀測站AQI
+  aqi [-l|--list]: 觀測站列表
+  aqi [-h|--help]: 顯示本說明}))
 
 (if (empty? (vector->list (current-command-line-arguments)))
     (aqi)
@@ -80,20 +80,6 @@
       [("-l" "--list") (list-sites)]
       [("-h" "--help") (display-help)]
       [else (aqi (first (current-command-line-arguments)))]))
-      
-;; RKT
-
-
-;; case "$1" in
-;;     -l|--list)
-;;         racket_source=${partial_racket_source}"(list-sites)"
-;;         ;;
-;;     -h|--help|-?) echo "$help"; exit 0 ;;
-;;     "") racket_source=${partial_racket_source}"(aqi)" ;;
-;;     *) racket_source=${partial_racket_source}"(aqi \"$1\")"
-;; esac
-
-;; racket <(echo "$racket_source")
 
 ;; # http://ergoemacs.org/emacs_manual/emacs/Specifying-File-Variables.html
 ;; # Local Variables:
