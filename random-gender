@@ -2,4 +2,4 @@
 
 genders=("female" "male")
 rand_index=$(( RANDOM % 2 ))
-echo ${genders=[$rand_index]}
+echo "${genders[$rand_index]}"
