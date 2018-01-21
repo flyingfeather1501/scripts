@@ -61,10 +61,15 @@ compile_run_and_time:vala () {
 # interpreted languages
 formatted_time python python -c 'print("hello")'
 formatted_time perl perl -e 'print("hello\n")'
+formatted_time ruby ruby -e puts "hello"
+
 formatted_time racket racket -e '(displayln "hello")'
 formatted_time sbcl sbcl --noinform --non-interactive --eval '(format t "hello~%")'
 formatted_time clisp clisp -q -x '(format t "hello~%")'
 formatted_time "emacs lisp" emacs -batch -eval '(princ "hello\n")'
+
+formatted_time node node --eval 'console.log("hello");'
+formatted_time gjs gjs -c 'print("hello");'
 
 compile_run_and_time:go /dev/fd/0 <<'GOLANG'
 package main
