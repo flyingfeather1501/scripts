@@ -25,6 +25,9 @@ formatted_time () {
           '"unit":"second"}'
 }
 
+error () {
+    echo '{"status":"fail",'\
+         '"message": "'"$*"'"}'
 }
 
 compile_run_and_time:go () {
