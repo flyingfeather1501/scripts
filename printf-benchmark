@@ -2,15 +2,29 @@
 # language startup time benchmark
 # thanks Rosetta Code for a convenient Hello World listing
 #
-# For compiled languages, I'm measuring the speed the compiled executable runs
+# For compiled languages, I'm measuring the speed the compiled executable runs.
+#
+# I'm taking the "real" field in bash's "time" output
+# (Specifically, TIMEFORMAT="%3R")
 
 # time the command and format the result
 formatted_time () {
-    echo "$(tput bold)$1$(tput sgr0)"
-    shift 1
-    time "$@"
-    echo ----------
-    echo
+    TIMEFORMAT="%3R"
+    language="$1"; shift 1
+    tmp_time=$(mktemp)
+    tmp_cmd_output=$(mktemp)
+
+    # { time stuff }: output of stuff -> stdout, time -> stderr
+    { time "$@"; } > "$tmp_cmd_output" 2> "$tmp_time"
+
+    time_seconds=$(cat "$tmp_time")
+    output=$(cat "$tmp_cmd_output")
+    echo '{"status":"success",'\
+          '"time":"'"$time_seconds"'",'\
+          '"language":"'"$language"'",'\
+          '"unit":"second"}'
+}
+
 }
 
 compile_run_and_time:go () {
