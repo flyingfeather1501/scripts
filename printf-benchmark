@@ -75,6 +75,7 @@ formatted_time perl perl -e 'print("hello\n")'
 formatted_time ruby ruby -e puts "hello"
 
 formatted_time racket racket -e '(displayln "hello")'
+formatted_time guile guile -c '(display "hello\n")'
 formatted_time sbcl sbcl --noinform --non-interactive --eval '(format t "hello~%")'
 formatted_time clisp clisp -q -x '(format t "hello~%")'
 formatted_time "emacs lisp" emacs -batch -eval '(princ "hello\n")'
