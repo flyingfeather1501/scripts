@@ -15,7 +15,11 @@ formatted_time () {
     tmp_cmd_output=$(mktemp)
 
     # { time stuff }: output of stuff -> stdout, time -> stderr
-    { time "$@"; } > "$tmp_cmd_output" 2> "$tmp_time"
+    if ! { time "$@"; } > "$tmp_cmd_output" 2> "$tmp_time"
+    then
+       	error "$* failed"
+        return
+    fi
 
     time_seconds=$(cat "$tmp_time")
     output=$(cat "$tmp_cmd_output")
@@ -23,11 +27,12 @@ formatted_time () {
           '"time":"'"$time_seconds"'",'\
           '"language":"'"$language"'",'\
           '"unit":"second"}'
+    rm $tmp_time $tmp_cmd_output
 }
 
 error () {
     echo '{"status":"fail",'\
-         '"message": "'"$*"'"}'
+          '"message": "'"$*"'"}'
 }
 
 compile_run_and_time:go () {
@@ -72,7 +77,10 @@ compile_run_and_time:haskell () {
 # interpreted languages
 formatted_time python python -c 'print("hello")'
 formatted_time perl perl -e 'print("hello\n")'
-formatted_time ruby ruby -e puts "hello"
+formatted_time ruby ruby -e 'puts "hello"'
+formatted_time lua lua -e 'print("hello")'
+formatted_time bash bash -c 'echo "hello"'
+formatted_time fish fish -c 'echo "hello"'
 
 formatted_time racket racket -e '(displayln "hello")'
 formatted_time guile guile -c '(display "hello\n")'
