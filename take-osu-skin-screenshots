@@ -1,0 +1,45 @@
+#!/bin/fish
+# vim: filetype=fish
+
+function waitfor
+    # Block until $argv[1] to come into existance
+    while true
+        sleep 1
+        if test -e $argv[1]
+            break
+        end
+    end
+end
+
+alias screenshot 'import -window root $argv'
+
+function espeak-trigger-screenshot
+    # espeak-trigger-screenshot <image name> [espeak input]
+    # say the image name, wait for /tmp/trigger to appear, then take
+    # a screenshot.
+    if test -n "$argv[2]"
+        set -g speak "$argv[2]"
+    else
+        set -g speak "$argv[1]"
+    end
+    espeak "$speak"
+    waitfor /tmp/trigger
+    screenshot ./$argv[1].jpg
+    sleep 3 # wait for trigger to be deleted
+end
+
+espeak-trigger-screenshot fail
+espeak-trigger-screenshot mode-select "mode select"
+espeak-trigger-screenshot mods
+espeak-trigger-screenshot pause
+espeak-trigger-screenshot ranking
+espeak-trigger-screenshot song-select "song select"
+
+espeak-trigger-screenshot std-1 "standard one"
+espeak-trigger-screenshot std-2 "standard two"
+espeak-trigger-screenshot std-3 "standard three"
+
+espeak-trigger-screenshot ctb-1 "catch one"
+espeak-trigger-screenshot ctb-2 "catch two"
+
+espeak "use simple screen recorder for spinner"
