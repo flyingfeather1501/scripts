@@ -1,6 +1,12 @@
 #!/usr/bin/env fish
+# vim: filetype=fish
 
-set R (hex2dec (echo $argv[1] | cut -c 1-2))
-set G (hex2dec (echo $argv[1] | cut -c 3-4))
-set B (hex2dec (echo $argv[1] | cut -c 5-6))
-echo $R,$G,$B
+set R (hex2dec (echo $argv[1] | cut -d',' -f 1))
+set G (hex2dec (echo $argv[1] | cut -d',' -f 2))
+set B (hex2dec (echo $argv[1] | cut -d',' -f 3))
+for i in R G B
+    if test (echo $$i | wc --chars) -le 2
+        set $i 0$$i
+    end
+end
+echo $R$G$B
