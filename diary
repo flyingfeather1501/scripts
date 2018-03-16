@@ -25,9 +25,10 @@ usage:
 "
 
 [ -z "$DIARY_DIR" ] && DIARY_DIR="$HOME/diary"
-[ -d "$DIARY_DIR" ] || ( mkdir -p "$DIARY_DIR" || exit 1 )
 [ -z "$FILTER" ] && FILTER="filter"
 [ -z "$EDITOR" ] && EDITOR="vi"
+
+[ -d "$DIARY_DIR" ] || ( mkdir -p "$DIARY_DIR" || exit 1 )
 
 filter () {
     # filter => paths -> path
@@ -52,7 +53,7 @@ new () {
 
 edit () {
     if [ -z "$1" ]; then # no args given
-        "$EDITOR" "$(cd "$DIARY_DIR" && find . | $FILTER)"
+        "$EDITOR" "$(find "$DIARY_DIR" | $FILTER)"
     elif [ -z "$2" ]; then # 1 arg given
         "$EDITOR" "$DIARY_DIR"/"$1"
     else # >1 args given
