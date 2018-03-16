@@ -1,11 +1,18 @@
 #!/bin/bash
-# Sends input to xclip
+# Copy input arguments or stdin to the clipboard.
+quiet () {
+    "$@" >/dev/null 2>/dev/null
+}
 
 # Read stdin if no argument given
-if [[ -z ${1+x} ]];then
-  string=$(cat)
+if [[ -z ${1+x} ]]; then
+    string=$(cat)
 else
-  string="$*"
+    string="$*"
 fi
 echo "$string" | xclip -r -sel clip
 echo "$string" | xclip -r -sel prim
+
+if quiet qdbus org.kde.klipper; then
+    qdbus org.kde.klipper /klipper setClipboardContents "$string"
+fi
