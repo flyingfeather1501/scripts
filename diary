@@ -1,0 +1,74 @@
+#!/bin/bash
+cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
+
+helptext="
+$(basename "$0"): Personal diary helper script
+
+configuration:
+  \$DIARY_DIR: Set to ~/diary if not already set.
+  \$FILTER: Interactive filter for use with \`new\`
+  \$EDITOR: Falls back to vi when not set.
+
+usage:
+  $(basename "$0") new <title> [date]
+    Add new diary entry \$DIARY_DIR/[date]-<title>.md.
+    [date] is in ISO8601 format if not specified.
+
+  $(basename "$0") edit
+  $(basename "$0") edit <path>
+  $(basename "$0") edit <title> <date>
+    Edit a diary entry.
+    Without an argument, this will ask for a file in \$DIARY_DIR using
+    \$FILTER, or if that's unset, ask for <path> in a prompt.
+    When <path> is specified, \$DIARY_DIR/<path> will be opened.
+    When <title> and <date> are given, \$DIARY_DIR/<date>-<title>.md will be opened.
+"
+
+[ -z "$DIARY_DIR" ] && DIARY_DIR="$HOME/diary"
+[ -d "$DIARY_DIR" ] || ( mkdir -p "$DIARY_DIR" || exit 1 )
+[ -z "$FILTER" ] && FILTER="filter"
+[ -z "$EDITOR" ] && EDITOR="vi"
+
+filter () {
+    # filter => paths -> path
+    # Barebones "interactive" filter
+    echo "$(tput bold)List of files:$(tput sgr0)"
+    cat
+    echo -n "$(tput bold)Enter a filename: $(tput sgr0)"
+    read -r filename </dev/tty
+    echo "$filename"
+}
+
+new () {
+    TITLE="$1"
+    if [ -z "$2" ]; then
+        DATE="$(date --iso-8601=seconds)"
+    else
+        DATE="$2"
+    fi
+    touch "$DIARY_DIR"/"$DATE"-"$TITLE".md
+    echo "$DIARY_DIR"/"$DATE"-"$TITLE".md
+}
+
+edit () {
+    if [ -z "$1" ]; then # no args given
+        "$EDITOR" "$(cd "$DIARY_DIR" && find . | $FILTER)"
+    elif [ -z "$2" ]; then # 1 arg given
+        "$EDITOR" "$DIARY_DIR"/"$1"
+    else # >1 args given
+        "$EDITOR" "$DIARY_DIR"/"$2"-"$1".md
+    fi
+}
+
+case "$1" in
+    (new)
+        [ -z "$2" ] && echo "$helptext" && exit 1
+        new "$2" "$3"
+        ;;
+    (edit)
+        edit "$2" "$3"
+        ;;
+    (""|*)
+        echo "$helptext"
+        ;;
+esac
