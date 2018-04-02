@@ -22,6 +22,9 @@ usage:
     \$FILTER, or if that's unset, ask for <path> in a prompt.
     When <path> is specified, \$DIARY_DIR/<path> will be opened.
     When <title> and <date> are given, \$DIARY_DIR/<date>-<title>.md will be opened.
+
+  $(basename "$0") clean
+    Clean empty diary entries.
 "
 
 [ -z "$DIARY_DIR" ] && DIARY_DIR="$HOME/diary"
@@ -29,6 +32,20 @@ usage:
 [ -z "$EDITOR" ] && EDITOR="vi"
 
 [ -d "$DIARY_DIR" ] || ( mkdir -p "$DIARY_DIR" || exit 1 )
+
+clean () {
+    # Clean empty entries
+    local empties=$(\
+        du -h "$DIARY_DIR"/* \
+        | sort -h \
+        | grep 0\t \
+        | cut -d \t -f 2)
+    if [ "$empties" == "" ]; then
+        echo "No empty entry."
+    else
+        rm -i "$entries"
+    fi
+}
 
 filter () {
     # filter => paths -> path
@@ -68,6 +85,9 @@ case "$1" in
         ;;
     (edit)
         edit "$2" "$3"
+        ;;
+    (clean*)
+        clean
         ;;
     (""|*)
         echo "$helptext"
