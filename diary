@@ -38,7 +38,7 @@ clean () {
     rm -i $(echo \
         "$(du -h "$DIARY_DIR"/* \
            | grep $'0\t' \
-           | sed s/$'0\t'//g)")
+           | sed s/$'0\t'//g)") 2>/dev/null
 }
 
 filter () {
