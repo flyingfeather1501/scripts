@@ -1,0 +1,11 @@
+#!/bin/bash
+# Commit stuff periodically so that working state is actually saved
+
+while true; do
+    echo Adding
+    git add .
+    echo Committing
+    git commit -m "auto save commit"
+    echo Sleeping
+    sleep 5m
+done
