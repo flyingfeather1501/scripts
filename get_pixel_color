@@ -1,0 +1,19 @@
+#!/usr/bin/python
+"""
+Print RGB color values of screen pixel at location x,y.
+From https://stackoverflow.com/questions/1605350/
+"""
+
+import sys
+import gi
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gdk
+
+
+def pixel_at(x, y):
+    window = Gdk.get_default_root_window()
+    pb = Gdk.pixbuf_get_from_window(window, x, y, 1, 1)
+    return pb.get_pixels()
+
+
+print(tuple(pixel_at(int(sys.argv[1]), int(sys.argv[2]))))
