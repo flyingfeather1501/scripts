@@ -1,0 +1,10 @@
+#!/bin/bash
+# Like dos2unix & unix2dos, this will edit the file in place
+
+cleanup () {
+  rm "$temp"
+}
+temp=$(mktemp)
+trap cleanup INT
+iconv -f shift-jis "$1" -o "$temp"
+mv "$temp" "$1"
