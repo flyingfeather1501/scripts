@@ -1,0 +1,5 @@
+#!/bin/bash
+# Append a <br> tag before each newline
+
+# This obviously kills all occurances of whatever magical characters I choose
+tr '\n' '+' | sed 's/+/<br>\n/g'
