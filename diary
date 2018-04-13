@@ -63,7 +63,10 @@ new () {
 
 edit () {
     if [ -z "$1" ]; then # no args given
-        "$EDITOR" "$(find "$DIARY_DIR" | $FILTER)"
+        local file
+        file="$(find "$DIARY_DIR" | $FILTER)"
+        [ "$file" == "" ] && return 1
+        "$EDITOR" "$file"
     elif [ -z "$2" ]; then # 1 arg given
         "$EDITOR" "$DIARY_DIR"/"$1"
     else # >1 args given
