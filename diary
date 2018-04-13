@@ -28,7 +28,7 @@ usage:
 "
 
 [ -z "$DIARY_DIR" ] && DIARY_DIR="$HOME/diary"
-[ -z "$FILTER" ] && FILTER="filter"
+[ -z "$FILTER" ] && echoexit 1 "\`diary edit\` without arguments needs an interactive filter. Specify one with \$FILTER."
 [ -z "$EDITOR" ] && EDITOR="vi"
 
 [ -d "$DIARY_DIR" ] || ( mkdir -p "$DIARY_DIR" || exit 1 )
