@@ -27,7 +27,7 @@ usage:
     Clean empty diary entries.
 "
 
-[ -z "$DIARY_DIR" ] && DIARY_DIR="$HOME/diary"
+[ -z "$DIARY_DIR" ] && DIARY_DIR="$(read -r -p "Please enter path to diary: ")"
 [ -z "$FILTER" ] && echoexit 1 "\`diary edit\` without arguments needs an interactive filter. Specify one with \$FILTER."
 [ -z "$EDITOR" ] && EDITOR="vi"
 
