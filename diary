@@ -25,6 +25,9 @@ usage:
 
   $(basename "$0") clean
     Clean empty diary entries.
+
+  $(basename "$0") dir
+    Return \$DIARY_DIR.
 "
 
 [ -z "$DIARY_DIR" ] && DIARY_DIR="$(read -r -p "Please enter path to diary: ")"
@@ -81,6 +84,9 @@ case "$1" in
         ;;
     (edit)
         edit "$2" "$3"
+        ;;
+    (dir)
+        echo "$DIARY_DIR"
         ;;
     (clean*)
         clean
