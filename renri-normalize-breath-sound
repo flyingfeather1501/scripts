@@ -1,20 +1,43 @@
 #!/bin/bash
+OPTIND=1
+
+HELPTEXT="
+renri-normalize-breath-sound <-p PATH> [options]
+ Normalize Renri's breath sounds to <level> and make them available
+ as 'nb1', 'nb2', 'nb3', and 'nb4' (by default).
+
+ options:
+  -p PATH: path to Renri's VB folder
+  -l LEVEL: what level to normalize her breath sounds to (default -3db)
+  -a ALIAS: alias prefix for the normalized breath sounds (default nb)
+"
 
 echoexit () {
-    echo "
-renri-normalize-breath-sound [path-to-renri] [level]
- Normalize Renri's breath sounds to <level> and make them available
- as 'nb1', 'nb2', 'nb3', and 'nb4'.
-
- Usage:
-  path-to-renri: path to Renri's VB folder
-  level: what level to normalize her breath sounds to, default -3db
-"
-    exit "$1"
+    echo "$1"
+    exit "$2"
 }
 
-{ [ -n "$1" ] && renri_path="$1"; } || echoexit 1
-{ [ -n "$2" ] && level="$2"; } || level=-3db
+while getopts "p:l:a:h?" opt; do
+    case "$opt" in
+        (p)
+            renri_path="$OPTARG"
+            ;;
+        (l)
+            level="$OPTARG"
+            ;;
+        (a)
+            breath_alias="$OPTARG"
+            ;;
+        (h|\?)
+            echoexit "$HELPTEXT" 0
+            ;;
+    esac
+done
+
+[ -z "$renri_path" ] && echoexit "Please specify Renri's VB path with -p." 1
+[ -z "$level" ] && level="-3db"
+[ -z "$breath_alias" ] && breath_alias="nb"
+
 renri_breath_path="$renri_path"/ブレス
 renri_normalized_breath_path="$renri_path"/ブレス-normalized
 
@@ -26,9 +49,9 @@ for i in "$renri_normalized_breath_path"/*.wav; do
     normalize -q --amplitude="$level" "$i"
 done
 
-echo "Changing UTAU alias for normalized breath sounds to nb[1234]..."
+echo "Changing UTAU alias for normalized breath sounds..."
 iconv -f shift-jis -t utf8 "$renri_normalized_breath_path"/oto.ini \
-    | sed 's/- ブレス/nb/g' \
+    | sed "s/- ブレス/$breath_alias/g" \
     | iconv -f utf8 -t shift-jis \
     | sponge "$renri_normalized_breath_path"/oto.ini
 
