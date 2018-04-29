@@ -1,0 +1,8 @@
+#!/bin/bash
+command -v "$1" >/dev/null || exit 1
+
+if pgrep "^$1$" >/dev/null; then
+    pkill "^$1$"
+else
+    nohup "$1" >/dev/null 2>/dev/null &
+fi
