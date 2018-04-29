@@ -81,7 +81,8 @@
       [("-h" "--help") (display-help)]
       [else (aqi (first (current-command-line-arguments)))]))
 
-;; # http://ergoemacs.org/emacs_manual/emacs/Specifying-File-Variables.html
-;; # Local Variables:
-;; # mode: racket
-;; # End:
+;; vim: filetype=racket
+;; http://ergoemacs.org/emacs_manual/emacs/Specifying-File-Variables.html
+;; Local Variables:
+;; mode: racket
+;; End:
