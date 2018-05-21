@@ -3,10 +3,9 @@
 # lets me actually use Sony's camera
 
 # Exit if not on Android
-if uname -a | grep Android > /dev/null; then
-  true
-else
+if ! uname -a | grep -qs Android; then
   echo "This script is for Android. Exiting"
+  exit 1
 fi
 
 if ls /sdcard/DCIM/100ANDRO/DSC_* &> /dev/null; then
