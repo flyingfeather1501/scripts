@@ -1,9 +1,11 @@
-#lang racket/base
-(require racket/port
-         racket/list
-         racket/string
-         data/collection
-         threading)
+#lang racket
+(require threading
+         data/collection)
+
+;; Open this file with emacs, run this in a repl, cd to the video assets folder, and start editing
+;; videostring-set!*, add-tag! are the current useful functions
+
+(provide (all-defined-out))
 
 ;; should probably use a struct for this
 (define (videostring-meta videostr)
@@ -36,8 +38,19 @@
     key
     val)))
 
+(define (videostring-set* videostr key val . rest)
+  "Set each odd-numbered argument as even-numbered key's value in Videostr."
+  (if (empty? rest)
+      (videostring-set videostr key val)
+      (apply
+       videostring-set*
+       (videostring-set videostr key val)
+       (first rest)
+       (second rest)
+       (drop 2 rest))))
+
 (define (videostring-update videostr key updater)
-  "Prompt for new tags for videostr."
+  "Update value of Key in Videostr with Updater."
   (videostring
    (videostring-time videostr)
    (dict-update
@@ -61,9 +74,8 @@
 
 (define videostring-change-in-field videostring-set)
 
-;; ((title Title) (place Place) (tags Tag1 Tag2))
 (define (add-tag videostr tag)
-  (videostring-add-to-field videostr 'tag tag))
+  (videostring-add-to-field videostr 'tags tag))
 
 (define (edit-tag videostr)
   "Prompt for new tags for videostr."
@@ -77,7 +89,7 @@
      (read (open-input-string (read-line))))))
 
 (define (remove-tag videostr tag)
-  (videostring-remove-from-field videostr 'tag tag))
+  (videostring-remove-from-field videostr 'tags tag))
 
 (define (rename-file-or-directory/update file updater)
   ;; More convenient when in a repl as file is already bound
@@ -85,7 +97,29 @@
    file
    (updater file)))
 
-(define (add-tag! file tag)
+(define (videostring-time->path videostr-time)
+  "Return the file path that matches videostr-time"
+  (~> (directory-list)
+      (map path->string _)
+      (filter (lambda (s) (string-prefix? s videostr-time)) _)
+      stream->list
+      ((lambda (l) (if (= (length l) 1) (first l) l)) _)))
+
+(define (videostring-set!* videostr-time #:extension [ext ""] . rest)
   (rename-file-or-directory
-   file
-   (add-tag (path->string f) tag)))
+   (videostring-time->path videostr-time)
+   (string-append
+    (apply
+     videostring-set*
+     (videostring-time->path videostr-time)
+     rest)
+    ext)))
+
+(define (add-tag! videostr-time tag #:extension [ext ""])
+  (rename-file-or-directory
+   (videostring-time->path videostr-time)
+   (string-append
+    (add-tag (videostring-time->path videostr-time) tag)
+    ext)))
+
+;; These bang functions can be generated with a macro
