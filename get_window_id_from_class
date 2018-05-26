@@ -1,0 +1,2 @@
+#!/bin/bash
+wmctrl -lx | grep "$1" | cut -d ' ' -f 1
